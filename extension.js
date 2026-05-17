@@ -20,6 +20,9 @@
 
   -  Make sure randomized theme to be applied is not the same as the current one
 
+  -  Gather more custom themes that the user has downloaded!
+      Add another few lines of code to search for other dir's parse their package.json for their ID  & continue
+
 */
 
 
@@ -44,7 +47,7 @@
 
 
 //[Allocations before Activation]
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------------
 
 
   //See if the user's Directory leading up to mystery one exists
@@ -102,11 +105,11 @@
   //Collect the Dark & Light Arrays
     GetThemesByType(true); GetThemesByType(false);
 
-//---------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------------
 
 
 //[System Function]
-//--------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------------
 
   //[Runs upon Activation of the Extension]
     function activate(context) {
@@ -122,29 +125,20 @@
           //[Dark Mode Command Registry]
             vscode.commands.registerCommand("darkMode", (item) => {
 
-
-//[TO DO!!]
-//  Do this for the other branches below too
-
-              //Select a theme from the respective array
+              //Select a theme & gather the name from the respective array
                 const randNumber = GenerateRandomNumber(darkThemeNames.length);
+                newName = darkThemeNames[randNumber];
 
-
-//[DEBUG!!]
-console.log(darkThemeNames[randNumber]);
-
-
-//[TO DO!!]
               //Function to apply the new theme to the user's settings json
-                //Code here...
+                appliedTheme = ApplyNewTheme(newName);
 
 
-//[ANOTHER TO DO!!]
-
+              //If the function returns false, try again with a new random number
+                if(!appliedTheme){ newName = darkThemeNames[GenerateRandomNumber(darkThemeNames.length)]; ApplyNewTheme(newName); }
 
 
               //Inform the user of their choice
-                vscode.window.showInformationMessage("Random Dark Theme Applied!");
+                vscode.window.showInformationMessage(`Random [Dark] Theme Applied! [${newName}]`);
 
             }),
 
@@ -152,9 +146,20 @@ console.log(darkThemeNames[randNumber]);
           //[Light Mode Command Registry]
             vscode.commands.registerCommand("lightMode", (item) => {
 
+              //Select a theme & gather the name from the respective array
+                const randNumber = GenerateRandomNumber(lightThemeNames.length);
+                newName = lightThemeNames[randNumber];
+
+              //Function to apply the new theme to the user's settings json
+                appliedTheme = ApplyNewTheme(newName);
+
+
+              //If the function returns false, try again with a new random number
+                if(!appliedTheme){ newName = lightThemeNames[GenerateRandomNumber(lightThemeNames.length)]; ApplyNewTheme(newName); }
+
 
               //Inform the user of their choice
-                vscode.window.showInformationMessage("Random Light Theme Applied!");
+                vscode.window.showInformationMessage(`Random [Light] Theme Applied! [${newName}]`);
 
             }),
 
@@ -162,17 +167,27 @@ console.log(darkThemeNames[randNumber]);
           //[Any Theme Mode Command Registry]
             vscode.commands.registerCommand("anyMode", (item) => {
 
+              //Select a theme & gather the name from the respective array
+                const randNumber = GenerateRandomNumber(allThemeNames.length);
+                newName = allThemeNames[randNumber];
+
+              //Function to apply the new theme to the user's settings json
+                appliedTheme = ApplyNewTheme(newName);
+
+
+              //If the function returns false, try again with a new random number
+                if(!appliedTheme){ newName = allThemeNames[GenerateRandomNumber(allThemeNames.length)]; ApplyNewTheme(newName); }
 
 
               //Inform the user of their choice
-                vscode.window.showInformationMessage("Any Random Theme Applied!");
+                vscode.window.showInformationMessage(`Random [All] Theme Applied! [${newName}]`);
 
             })
 
         );
     }
 
-//--------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------------
 
 
 //[Other Functions]
@@ -225,7 +240,6 @@ console.log(darkThemeNames[randNumber]);
 
 //[Classes/Objects]
 //--------------------------------------------------------------------------------------------
-
 
   //[Theme Changer]
     class ThemeChanger {
