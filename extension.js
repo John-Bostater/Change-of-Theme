@@ -10,18 +10,9 @@
 
 [TO DO!!]
 
-  -  Have three arrays containing themes:  allThemes, lightThemes, darkThemes
-
-  -  Allow user's the option to set a "Default theme" that they can quickly apply with a button
-
-  -  Allow user's the option to randomly switch themes on a timer (a feat that similar extensions have)
-
   -  Create an icon for this extension!
 
   -  Make sure randomized theme to be applied is not the same as the current one
-
-  -  Gather more custom themes that the user has downloaded!
-      Add another few lines of code to search for other dir's parse their package.json for their ID  & continue
 
 */
 
@@ -227,10 +218,28 @@
     function ApplyNewTheme(newThemeName){
 
       //Find the user's  [settings.json]  and find a way to rewrite the  ["workbench.colorTheme"] to the new theme
-        //Code here..
+        const settingsDir = path.join("C:", "Users", userName, "AppData", "Roaming", "Code", "User", "settings.json")
 
 
-      //Else, Theme Does not match, return true
+      //[DEBUG!!] Check if the path exists
+        if(fs.existsSync(settingsDir)){
+
+          //Collect the JSON file as a JSON
+            const rawTxt = fs.readFileSync(settingsDir, "utf-8")
+            const jsonData = JSON.parse(rawTxt);
+
+
+          //Change the JSON theme and then save data to new variable
+          //(we are going to rewrite the actual file with updated data)
+            jsonData["workbench.colorTheme"] = newThemeName;
+
+
+          //Rewrite the file with the updated json data
+            fs.writeFileSync(settingsDir, JSON.stringify(jsonData, null, 4));
+        }
+
+
+      //Else, Theme Does not match to the current one, return true
         return true;
     }
 
