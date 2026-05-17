@@ -29,6 +29,7 @@
   //Variables
     var userName = os.userInfo().username;
     var revertTheme = "";
+    var startingTheme = "";
 
   //Arrays
     var allThemeNames = [];
@@ -54,11 +55,11 @@
 
       //Collect the name of the current theme
         revertTheme = jsonData["workbench.colorTheme"];
+        startingTheme = revertTheme;
     }
   
   //Else, do NOT let the proceed, we cannot change the theme if we cannot even find it first
     else{ console.log("CANNOT FIND the PATH TO the USER'S THEME"); return; }
-
 
 
   //See if the user's Directory leading up to mystery one exists
@@ -205,6 +206,17 @@
               //Inform the user of their choice
                 vscode.window.showInformationMessage(`Reverting theme back to: [${newName}]`);
 
+            }),
+
+          //[First Theme]
+            vscode.commands.registerCommand("startingTheme", (item) => {
+
+              //Revert the player's theme back
+                ApplyNewTheme(startingTheme);
+
+              //Inform the user of their choice
+                vscode.window.showInformationMessage(`Reverting back to Default theme: [${newName}]`);
+
             })
         );
     }
@@ -322,8 +334,11 @@
               //[Any Random Light Theme]
                 new Button("Random Light Theme", "Click to Run", "lightMode"),
 
-              //[Default Theme]
+              //[Revert Theme]
                 new Button("Revert Theme", "Click to Run", "revertTheme"),
+
+              //[Default Theme]
+                new Button("Starting Theme", "Click to Run", "startingTheme"),
 
             ];
         }
@@ -367,10 +382,9 @@
             //[Any Random Theme]
               else if(buttonName == "Revert Theme"){ this.iconPath = new vscode.ThemeIcon("arrow-left"); }
 
-
-            //[NEW FUNCTION HERE]  Use the sync, I like how it looks
-              //else if(buttonName == "Function Name"){ this.iconPath = new vscode.ThemeIcon("sync"); }
-
+            //Save the first theme the user has applied (so they can revert back)
+              else if(buttonName == "Starting Theme"){ this.iconPath = new vscode.ThemeIcon("sync"); }
+              
           //===============================================================================================
 
         }
