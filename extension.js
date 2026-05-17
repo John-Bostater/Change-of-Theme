@@ -25,10 +25,10 @@
     const vscode = require('vscode');
     const os = require('os');
     const path = require('path');
+    const fs = require('fs');
 
   //Variables
     var userName = os.userInfo().username;
-
 //----------------------------------------
 
 
@@ -44,12 +44,48 @@
   //
   //    a lot of   path.exist()   coming up im sure
   //
-    //Code here..
+    
+
+  //See if the user's Directory leading up to mystery one exists
+    const leadDir = path.join("C:", "Users", userName, "AppData", "Local", "Programs", "Microsoft VS Code")
+
+  //Reference to the directory containing the default themes json
+    var followDir = path.join("resources", "app", "extensions", "theme-defaults", "package.json");
+
+
+  //[Lead directory DNE] activate flag
+    if(!fs.existsSync(leadDir)){ MissingFileWarning("[ERROR]: VS Code Directory not found - {Change of Theme}"); return; }
+
+
+  //Reference to the complete path of the directory
+    var completePath = path.join(leadDir, followDir);
+
+
+  //Gather all of the directories past the lead (we will try a combo of paths until we come across the one we need)
+    const searchDirectories = fs.readdirSync(leadDir, {withFileTypes: true} );
+
+
+  //Parse every dir within the [searchDirectories]
+  //  Try combinations until we find the path we need
+    for(const parsedDir of searchDirectories){
+
+      //Check if the complete path is found
+        if(fs.existsSync(completePath)){ console.log("Path Found!!"); break; }
+
+
+      //Proceed to creating the file parsed is a folder
+        else if(parsedDir.isDirectory()){ completePath = path.join(leadDir, parsedDir.name, followDir); }
+
+    }
+
+  //Path still DNE, return
+    if(!fs.existsSync(completePath)){ MissingFileWarning("[Error]: Default Theme DIR was never found - {Change of Theme}"); return;}
 
 
   //Load the .json data from the dump 
   //  maybe just gather the array of theme name's directly from:   ["contributes"]["themes"][INDEX OF THEME]["label"]
     //Code here..
+
 
 
 //---------------------------------------------------------------------------
@@ -112,8 +148,7 @@
 
 
 //[Other Functions]
-//--------------------------------------------------------------------------------------------
-
+//-----------------------------------------------------------------------------------------------------------------------------
 
 //[TO DO!!]
 //  FINISH THIS FUNCTION
@@ -128,9 +163,15 @@
 //  FINISH THIS FUNCTION
 
   //Collect all of the themes either:    [Dark] : True    or    [Light] : False
-    function GenerateRandomNumber(themeType){ return 0; }
+    function GetThemesByType(themeType){ return 0; }
 
-//--------------------------------------------------------------------------------------------
+
+//[NEW!!]
+
+  //Missing file warning function
+    function MissingFileWarning(errorWarning){ vscode.window.showInformationMessage(errorWarning); console.log(errorWarning); }
+
+//-----------------------------------------------------------------------------------------------------------------------------
 
 
 //[Classes/Objects]
