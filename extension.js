@@ -12,7 +12,7 @@
 
   -  Create an icon for this extension!
 
-  -  Make sure randomized theme to be applied is not the same as the current one
+  -  Make sure randomized theme to be applied is not the same as the current one.
 
 */
 
@@ -28,6 +28,7 @@
 
   //Variables
     var userName = os.userInfo().username;
+    var revertTheme = "";
 
   //Arrays
     var allThemeNames = [];
@@ -39,6 +40,25 @@
 
 //[Allocations before Activation]
 //-----------------------------------------------------------------------------------------------------------------------------
+
+
+  //Find the user's  [settings.json]  and find a way to rewrite the  ["workbench.colorTheme"] to the new theme
+    const settingsDir = path.join("C:", "Users", userName, "AppData", "Roaming", "Code", "User", "settings.json")
+
+  //Path exists, continue
+    if(fs.existsSync(settingsDir)){
+
+      //Collect the JSON file as a JSON
+        const rawTxt = fs.readFileSync(settingsDir, "utf-8")
+        const jsonData = JSON.parse(rawTxt);
+
+      //Collect the name of the current theme
+        revertTheme = jsonData["workbench.colorTheme"];
+    }
+  
+  //Else, do NOT let the proceed, we cannot change the theme if we cannot even find it first
+    else{ console.log("CANNOT FIND the PATH TO the USER'S THEME"); return; }
+
 
 
   //See if the user's Directory leading up to mystery one exists
@@ -173,8 +193,19 @@
               //Inform the user of their choice
                 vscode.window.showInformationMessage(`Random [All] Theme Applied! [${newName}]`);
 
-            })
+            }), 
 
+
+          //[Revert Theme]
+            vscode.commands.registerCommand("revertTheme", (item) => {
+
+              //Revert the player's theme back
+                ApplyNewTheme(revertTheme);
+
+              //Inform the user of their choice
+                vscode.window.showInformationMessage(`Reverting theme back to: [${newName}]`);
+
+            })
         );
     }
 
@@ -230,6 +261,9 @@
           //[Themes Match, return false]
             if(newThemeName == jsonData["workbench.colorTheme"]){ console.log("Names Match"); return false; }
 
+          //[NEW!!]
+          //Save the name of the last theme (if the user would like to revert it)
+            revertTheme = jsonData["workbench.colorTheme"];
 
           //Change the JSON theme and then save data to new variable
           //(we are going to rewrite the actual file with updated data)
@@ -288,6 +322,9 @@
               //[Any Random Light Theme]
                 new Button("Random Light Theme", "Click to Run", "lightMode"),
 
+              //[Default Theme]
+                new Button("Revert Theme", "Click to Run", "revertTheme"),
+
             ];
         }
     }
@@ -326,6 +363,13 @@
 
             //[Any Random Theme]
               else if(buttonName == "Any Random Theme"){ this.iconPath = new vscode.ThemeIcon("wand"); }
+
+            //[Any Random Theme]
+              else if(buttonName == "Revert Theme"){ this.iconPath = new vscode.ThemeIcon("arrow-left"); }
+
+
+            //[NEW FUNCTION HERE]  Use the sync, I like how it looks
+              //else if(buttonName == "Function Name"){ this.iconPath = new vscode.ThemeIcon("sync"); }
 
           //===============================================================================================
 
