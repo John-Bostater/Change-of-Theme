@@ -3,8 +3,9 @@
 
 [Creation Date]: 5/16/26
 
+
 [Description]:
-    Randomize the theme to whatever
+  Randomize the theme to the user's specifications.
 
 
 [TO DO!!]
@@ -14,6 +15,10 @@
   -  Allow user's the option to set a "Default theme" that they can quickly apply with a button
 
   -  Allow user's the option to randomly switch themes on a timer (a feat that similar extensions have)
+
+  -  Create an icon for this extension!
+
+  -  Make sure randomized theme to be applied is not the same as the current one
 
 */
 
@@ -29,22 +34,18 @@
 
   //Variables
     var userName = os.userInfo().username;
+
+  //Arrays
+    var allThemeNames = [];
+    var darkThemeNames = [];
+    var lightThemeNames = [];
+
 //----------------------------------------
 
 
 //[Allocations before Activation]
 //---------------------------------------------------------------------------
 
-
-  //Find the .json file that contains all of the default themes 
-  //    Search the directories past:    "C:\Users\<NAME>\AppData\Local\Programs\Microsoft VS Code\<directory>"
-  //      We are doing this to see if they contain:   "<directory>\resources\app\extensions\theme-defaults\package.json" 
-  //
-  //  There could also NOT be a directory between the two, so account for that too!
-  //
-  //    a lot of   path.exist()   coming up im sure
-  //
-    
 
   //See if the user's Directory leading up to mystery one exists
     const leadDir = path.join("C:", "Users", userName, "AppData", "Local", "Programs", "Microsoft VS Code")
@@ -83,10 +84,23 @@
 
 
   //Load the .json data from the dump 
-  //  maybe just gather the array of theme name's directly from:   ["contributes"]["themes"][INDEX OF THEME]["label"]
-    //Code here..
+  //  maybe just gather the array of theme names directly from:   ["contributes"]["themes"][INDEX OF THEME]["label"]
+    
+  //Gather the JSON data
+    const rawTxt = fs.readFileSync(completePath, "utf-8")
+    const jsonData = JSON.parse(rawTxt);
 
 
+  //For the length of the entire array, collect all names
+    for(i=0; i < jsonData["contributes"]["themes"].length; i++){
+
+      //Gather the name of every theme and place it into our array
+        allThemeNames.push(jsonData["contributes"]["themes"][i]["id"]);
+
+    }
+
+  //Collect the Dark & Light Arrays
+    GetThemesByType(true); GetThemesByType(false);
 
 //---------------------------------------------------------------------------
 
@@ -112,8 +126,22 @@
 //[TO DO!!]
 //  Do this for the other branches below too
 
-              //Randomly Generate a number between:  0  and  Length(darkThemeArray)-1 
+              //Select a theme from the respective array
+                const randNumber = GenerateRandomNumber(darkThemeNames.length);
+
+
+//[DEBUG!!]
+console.log(darkThemeNames[randNumber]);
+
+
+//[TO DO!!]
+              //Function to apply the new theme to the user's settings json
                 //Code here...
+
+
+//[ANOTHER TO DO!!]
+
+
 
               //Inform the user of their choice
                 vscode.window.showInformationMessage("Random Dark Theme Applied!");
@@ -150,26 +178,47 @@
 //[Other Functions]
 //-----------------------------------------------------------------------------------------------------------------------------
 
-//[TO DO!!]
-//  FINISH THIS FUNCTION
 
   //Randomly generate a number between 0  & the number given
   //  this will be the index of our theme
-    function GenerateRandomNumber(randNumRange){ return 0; }
+    function GenerateRandomNumber(randNumRange){ return Math.floor(Math.random()*randNumRange); }
 
-
-
-//[TO DO!!]
-//  FINISH THIS FUNCTION
 
   //Collect all of the themes either:    [Dark] : True    or    [Light] : False
-    function GetThemesByType(themeType){ return 0; }
+    function GetThemesByType(themeType){ 
 
+      //Parse the Array containing all of the Themes & collect them accordingly
+        for(i=0; i < allThemeNames.length; i++){
 
-//[NEW!!]
+          //[Dark Theme Names]
+            if(themeType && allThemeNames[i].includes("Dark")){ darkThemeNames.push(allThemeNames[i]); }
+
+          //[Light Theme Names]
+            else if(themeType && allThemeNames[i].includes("Light")){ lightThemeNames.push(allThemeNames[i]); }
+        }
+    }
+
 
   //Missing file warning function
     function MissingFileWarning(errorWarning){ vscode.window.showInformationMessage(errorWarning); console.log(errorWarning); }
+
+
+//[TO DO!]
+//
+//  return FALSE   if the theme name selected matches the current theme applied (we will select a new random #)
+
+
+  //Find the user's settings.json so we can write the new theme to the settings
+    function ApplyNewTheme(newThemeName){
+
+      //Find the user's  [settings.json]  and find a way to rewrite the  ["workbench.colorTheme"] to the new theme
+        //Code here..
+
+
+      //Else, Theme Does not match, return true
+        return true;
+    }
+
 
 //-----------------------------------------------------------------------------------------------------------------------------
 
