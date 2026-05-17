@@ -30,10 +30,30 @@
             vscode.commands.registerCommand("darkMode", (item) => {
 
 
-              //DEBUG/VS CODE WINDOW DISPLAY
-                vscode.window.showInformationMessage("Running Function for: " + item.label);
+              //Inform the user of their choice
+                vscode.window.showInformationMessage("Random Dark Theme Applied!");
+
+            }),
+
+
+          //[Light Mode Command Registry]
+            vscode.commands.registerCommand("lightMode", (item) => {
+
+
+              //Inform the user of their choice
+                vscode.window.showInformationMessage("Random Light Theme Applied!");
+
+            }),
+
+
+          //[Any Theme Mode Command Registry]
+            vscode.commands.registerCommand("anyMode", (item) => {
+
+              //Inform the user of their choice
+                vscode.window.showInformationMessage("Any Random Theme Applied!");
 
             })
+
         );
     }
 
@@ -69,13 +89,13 @@
             return [
 
               //[Any Random Theme]
-                new Button("Any Random Theme", "Click to Run", "darkMode"),
+                new Button("Any Random Theme", "Click to Run", "anyMode"),
 
               //[Any Random Dark Theme]
-                new Button("Random Dark Theme", "", "darkMode"),
+                new Button("Random Dark Theme", "Click to Run", "darkMode"),
 
               //[Any Random Light Theme]
-                new Button("Random Light Theme", "", "darkMode"),
+                new Button("Random Light Theme", "Click to Run", "lightMode"),
 
             ];
         }
@@ -87,7 +107,7 @@
 
 
       //Constructor
-        constructor(buttonName, description, commandId) {
+        constructor(buttonName, buttonDescription, commandId) {
 
           //Calls parent
             super(buttonName, vscode.TreeItemCollapsibleState.None);
@@ -101,14 +121,23 @@
             };
 
           //Button Description
-            this.description = description;
+            this.description = buttonDescription;
 
 
-//[TO DO]
-//(find other icons to differentiate buttons? or use emojis)
+          //Set up the icon for the button based on which type it is
+          //===============================================================================================
 
-          //Set up the icon for the button 
-            this.iconPath = new vscode.ThemeIcon("sparkle");
+            //[Light Theme]
+              if(buttonName == "Random Light Theme"){ this.iconPath = new vscode.ThemeIcon("sparkle"); }
+
+            //[Dark Theme]
+              else if(buttonName == "Random Dark Theme"){ this.iconPath = new vscode.ThemeIcon("circle"); }
+
+            //[Any Random Theme]
+              else if(buttonName == "Any Random Theme"){ this.iconPath = new vscode.ThemeIcon("wand"); }
+
+          //===============================================================================================
+
         }
     }
 
