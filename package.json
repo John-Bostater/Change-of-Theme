@@ -1,5 +1,7 @@
 {
   "name": "change-of-theme",
+  "displayName": "Change of Theme",
+  "publisher": "JohnBostater",
   "version": "0.0.1",
   "main": "./extension.js",
 
@@ -10,6 +12,11 @@
   "activationEvents": [
     "onView:changeOfTheme"
   ],
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/John-Bostater/Change-of-Theme"
+  },
 
   "contributes": {
     "views": {

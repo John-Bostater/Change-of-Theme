@@ -220,13 +220,15 @@
       //Find the user's  [settings.json]  and find a way to rewrite the  ["workbench.colorTheme"] to the new theme
         const settingsDir = path.join("C:", "Users", userName, "AppData", "Roaming", "Code", "User", "settings.json")
 
-
-      //[DEBUG!!] Check if the path exists
+      //Path exists, continue
         if(fs.existsSync(settingsDir)){
 
           //Collect the JSON file as a JSON
             const rawTxt = fs.readFileSync(settingsDir, "utf-8")
             const jsonData = JSON.parse(rawTxt);
+
+          //[Themes Match, return false]
+            if(newThemeName == jsonData["workbench.colorTheme"]){ console.log("Names Match"); return false; }
 
 
           //Change the JSON theme and then save data to new variable
@@ -236,11 +238,14 @@
 
           //Rewrite the file with the updated json data
             fs.writeFileSync(settingsDir, JSON.stringify(jsonData, null, 4));
+
+          //Return true (file succesfully wrote to)
+            return true;
         }
 
 
       //Else, Theme Does not match to the current one, return true
-        return true;
+        return false;
     }
 
 
