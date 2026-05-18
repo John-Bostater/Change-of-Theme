@@ -5,5 +5,5 @@ Can't find a theme you like? why not randomly select one, and find one you see f
 
 ## Video Demonstration
 <video width="1920" autoplay muted loop playsinline>
-    <source src="VideoProject1.mp4" type="video/mp4">
+    <source src="./VideoDemo.mp4" type="video/mp4">
 </video>
