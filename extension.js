@@ -129,9 +129,10 @@
 
       //Register the Extension to the tree
         vscode.window.registerTreeDataProvider( "changeOfTheme", new ThemeChanger() );
+        //vscode.window.registerTreeDataProvider( "changeOfTheme", new MyTreeProvider() );
 
 
-      //Push events to subscribers of action-event handlers
+      //[Action Event Handling - All Items]
         context.subscriptions.push(
 
           //[Dark Mode Command Registry]
@@ -217,8 +218,23 @@
               //Inform the user of their choice
                 vscode.window.showInformationMessage(`Reverting back to Default theme: [${newName}]`);
 
+            }),
+
+
+//[NEW!!]
+          //[Quick Select Theme]
+            vscode.commands.registerCommand("quickSelect.leafClicked", (item) => {
+
+              //Apply the user's Quick Selection Choice
+                ApplyNewTheme(item);
+
+
+              //[DEBUG!!]
+              //Inform the user of their choice
+                vscode.window.showInformationMessage(`Reverting back to Default theme: [${item}]`);
             })
-        );
+
+        )
     }
 
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -310,38 +326,74 @@
           //Action-Event Handlers for the press of the buttons
             this._onDidChangeTreeData = new vscode.EventEmitter();
             this.onDidChangeTreeData = this._onDidChangeTreeData.event;
+
+
+//[NEW!!]
+          //Dropdown Items for the Quick Theme Select
+            this.dropdowns = [{
+
+              //[Quick Select Dropdown]
+                label: "Quick Select Theme",
+                children: allThemeNames
+            }];
+
         }
-
-      //Fire functions selected upon refresh
-        refresh(){ this._onDidChangeTreeData.fire(); }
-
-      //Return the item
-        getTreeItem(element){ return element; }
 
 
       //[Displayed Objects/Classes]
-        getChildren() {
+        getChildren(element) {
 
-          //List of "Buttons" for the extension
-            return [
 
-              //[Any Random Theme]
-                new Button("Any Random Theme", "Click to Run", "anyMode"),
+//[NEW!!]
+          //Capture the [Buttons] && [DropDown]
+            if(!element){
 
-              //[Any Random Dark Theme]
-                new Button("Random Dark Theme", "Click to Run", "darkMode"),
+              //List of "Buttons" for the extension
+                return [
 
-              //[Any Random Light Theme]
-                new Button("Random Light Theme", "Click to Run", "lightMode"),
+                  //[Any Random Theme]
+                    new Button("Any Random Theme", "Click to Run", "anyMode"),
 
-              //[Revert Theme]
-                new Button("Revert Theme", "Click to Run", "revertTheme"),
+                  //[Any Random Dark Theme]
+                    new Button("Random Dark Theme", "Click to Run", "darkMode"),
 
-              //[Default Theme]
-                new Button("Starting Theme", "Click to Run", "startingTheme"),
+                  //[Any Random Light Theme]
+                    new Button("Random Light Theme", "Click to Run", "lightMode"),
 
-            ];
+                  //[Revert Theme]
+                    new Button("Revert Theme", "Click to Run", "revertTheme"),
+
+                  //[Default Theme]
+                    new Button("Starting Theme", "Click to Run", "startingTheme"),
+              
+                  //[Quick Theme Select]
+                    ...this.dropdowns.map( d => new DropdownItem(d.label, d.children) )
+                ];
+           
+            }
+
+
+          //Capture Expanded Element's Child items
+            if(element.children) {
+
+              //Return Leafs connected to [Theme Names] that we will be using
+                return element.children.map( child => new ThemeName(child) );
+            }
+
+          //Else, return empty array
+            return [];
+
         }
+
+
+//[NEW!]
+
+      //Refresh the tree items
+        refresh(){ this._onDidChangeTreeData.fire(); }
+
+      //Return the Leaf [i.e. Theme Names in Quick Select]
+        getTreeItem(element){ return element; }
+
     }
 
 
@@ -386,6 +438,47 @@
               else if(buttonName == "Starting Theme"){ this.iconPath = new vscode.ThemeIcon("sync"); }
               
           //===============================================================================================
+
+        }
+    }
+
+
+//[NEW!!]
+
+  //[Dropdown Menu]
+    class DropdownItem extends vscode.TreeItem {
+
+      //Construct the UI Element
+        constructor(label, children) {
+
+          //Set Super to call constructor & set child Items
+            super(label, vscode.TreeItemCollapsibleState.Collapsed);
+            this.children = children;
+        }
+    }
+
+
+  //[Leaf Item] for the Dropdown's {Theme Name(s)}
+    class ThemeName extends vscode.TreeItem {
+
+      //Construct the Leaf [Theme Names] UI Element
+        constructor(label) {
+
+          //Set Super to call constructor
+            super(label,vscode.TreeItemCollapsibleState.None);
+
+
+          //[Action-Event Call for the Leaf Item]
+          //=============================================
+
+            //Click action attached here
+              this.command = {
+                  command: "quickSelect.leafClicked",
+                  title: "Leaf clicked",
+                  arguments: [label]
+              };
+
+          //=============================================
 
         }
     }
