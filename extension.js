@@ -12,8 +12,20 @@
 
   -  Create an icon for this extension!
 
-*/
+  -  Try and get the OS Type to differentiate between:   Windows & Mac OS
 
+  -  If the user is using Windows OS & the settings.json cannot be found, create one?
+        (do other checks to make sure the directory we want to create the new settings json into exists)
+
+
+  -  Look for more themes! (only have access to the Default one right now)
+
+  -  Optimize this script by only collecting all of this data to a json the first time this extension ever loads for quicker load times
+      but also do a check to see if any new themes have been downloaded by the user! (then the code will run again as if it's the user's first time loading)
+
+
+*/
+ 
 
 //[Global]
 //----------------------------------------
@@ -25,9 +37,17 @@
     const fs = require('fs');
 
   //Variables
-    var userName = os.userInfo().username;
     var revertTheme = "";
     var startingTheme = "";
+    var settingsDir = "";
+    var leadDir = "";
+    var followDir = "";
+    var completePath = "";
+    var realLead = "";
+
+  //Constants
+    const userName = os.userInfo().username;
+    const osType = os.type()
 
   //Arrays
     var allThemeNames = [];
@@ -41,11 +61,43 @@
 //-----------------------------------------------------------------------------------------------------------------------------
 
 
-  //Find the user's  [settings.json]  and find a way to rewrite the  ["workbench.colorTheme"] to the new theme
-    const settingsDir = path.join("C:", "Users", userName, "AppData", "Roaming", "Code", "User", "settings.json")
+//[TO DO!!]
+//  OS CHECK HERE!!
+
+  //[Windows - File Path Allocations]
+    if(osType == "Windows_NT"){
+
+      //Find the user's  [settings.json]  and find a way to rewrite the  ["workbench.colorTheme"] to the new theme
+        settingsDir = path.join("C:", "Users", userName, "AppData", "Roaming", "Code", "User", "settings.json")
+
+      //See if the user's Directory leading up to mystery one exists
+        leadDir = path.join("C:", "Users", userName, "AppData", "Local", "Programs", "Microsoft VS Code")
+
+      //Reference to the directory containing the default themes json
+        followDir = path.join("resources", "app", "extensions", "theme-defaults", "package.json");
+
+    }
+
+  //[Mac OS - File Path Allocations]
+    else if(osType == "Darwin"){
+
+      //Find the user's  [settings.json]  and find a way to rewrite the  ["workbench.colorTheme"] to the new theme
+        settingsDir = path.join("C:", "Users", userName, "AppData", "Roaming", "Code", "User", "settings.json")
+
+      //See if the user's Directory leading up to mystery one exists
+        leadDir = path.join("C:", "Users", userName, "AppData", "Local", "Programs", "Microsoft VS Code")
+
+      //Set the real lead
+        realLead = leadDir;
+
+      //Reference to the directory containing the default themes json
+        followDir = path.join("resources", "app", "extensions", "theme-defaults", "package.json");
+
+    }
+
 
   //Path exists, continue
-    if(fs.existsSync(settingsDir)){
+    if(fs.existsSync(settingsDir) && osType == "Windows_NT" ){
 
       //Collect the JSON file as a JSON
         const rawTxt = fs.readFileSync(settingsDir, "utf-8")
@@ -60,37 +112,31 @@
     else{ console.log("CANNOT FIND the PATH TO the USER'S THEME"); return; }
 
 
-  //See if the user's Directory leading up to mystery one exists
-    const leadDir = path.join("C:", "Users", userName, "AppData", "Local", "Programs", "Microsoft VS Code")
-
-  //Reference to the directory containing the default themes json
-    var followDir = path.join("resources", "app", "extensions", "theme-defaults", "package.json");
-
-
   //[Lead directory DNE] activate flag
     if(!fs.existsSync(leadDir)){ MissingFileWarning("[ERROR]: VS Code Directory not found - {Change of Theme}"); return; }
 
 
   //Reference to the complete path of the directory
-    var completePath = path.join(leadDir, followDir);
+    if(osType == "Windows_NT"){ completePath = path.join(leadDir, followDir); }
 
 
   //Gather all of the directories past the lead (we will try a combo of paths until we come across the one we need)
-    const searchDirectories = fs.readdirSync(leadDir, {withFileTypes: true} );
+    var searchDirectories = fs.readdirSync(leadDir, {withFileTypes: true} );
 
 
   //Parse every dir within the [searchDirectories]
   //  Try combinations until we find the path we need
     for(const parsedDir of searchDirectories){
 
-      //Check if the complete path is found
-        if(fs.existsSync(completePath)){ console.log("Path Found!!"); break; }
+      //Check if the complete path is found  & collect the real-lead path
+        if(fs.existsSync(completePath) && parsedDir.isDirectory()){ console.log(`Path Found: ${completePath}`); break; }
 
 
       //Proceed to creating the file parsed is a folder
-        else if(parsedDir.isDirectory()){ completePath = path.join(leadDir, parsedDir.name, followDir); }
+        else if(parsedDir.isDirectory()){ realLead = path.join(leadDir, parsedDir.name); completePath = path.join(leadDir, parsedDir.name, followDir); }
 
     }
+
 
   //Path still DNE, return
     if(!fs.existsSync(completePath)){ MissingFileWarning("[Error]: Default Theme DIR was never found - {Change of Theme}"); return;}
@@ -98,19 +144,58 @@
 
   //Load the .json data from the dump 
   //  maybe just gather the array of theme names directly from:   ["contributes"]["themes"][INDEX OF THEME]["label"]
-    
-  //Gather the JSON data
-    const rawTxt = fs.readFileSync(completePath, "utf-8")
-    const jsonData = JSON.parse(rawTxt);
+
+  //Update the follow directory (search for other themes)
+    followDir = path.join("resources", "app", "extensions");
+
+  //Update the search directories to the other themes!
+    searchDirectories = fs.readdirSync(path.join(realLead, followDir), {withFileTypes: true} );
 
 
-  //For the length of the entire array, collect all names
-    for(i=0; i < jsonData["contributes"]["themes"].length; i++){
+  //Parse every dir within the [searchDirectories]
+  //  Try combinations until we find the path we need
+    for(const parsedDir of searchDirectories){
 
-      //Gather the name of every theme and place it into our array
-        allThemeNames.push(jsonData["contributes"]["themes"][i]["id"]);
+      //If the name of the parsed directory contains "theme" collect it!
+        if(parsedDir.isDirectory() && parsedDir.name.includes("theme")){
+         
+          //Gather the JSON data
+            const rawTxt = fs.readFileSync(path.join(realLead, followDir, parsedDir.name, "package.json"), "utf-8")
+            const jsonData = JSON.parse(rawTxt);
+
+
+          //[Default Theme Collection]
+            if(parsedDir.name.includes("theme-default")){
+
+              //For the length of the entire array, collect all names
+                for(i=0; i < jsonData["contributes"]["themes"].length; i++){
+
+                  //Gather the name of every theme and place it into our array
+                    allThemeNames.push(jsonData["contributes"]["themes"][i]["id"]);
+
+                }
+
+            }
+  
+          //Else, [Regular Xollection]
+            else{
+
+              //Try and gather the names
+                try{
+
+                  //Gather the name of every theme and place it into our array
+                    allThemeNames.push(jsonData["contributes"]["themes"][0]["id"]);
+
+                }
+              //Catch theme files with no length?
+                catch{console.log("NO LENGTH FOUND");}
+              
+            }
+
+        }
 
     }
+
 
   //Collect the Dark & Light Arrays
     GetThemesByType(true); GetThemesByType(false);
@@ -271,8 +356,11 @@
 
 
   //Find the user's settings.json so we can write the new theme to the settings
-    function ApplyNewTheme(newThemeName){
+  
+  function ApplyNewTheme(newThemeName){
 
+//[TO DO!!]
+//  OS CHECK HERE!!
       //Find the user's  [settings.json]  and find a way to rewrite the  ["workbench.colorTheme"] to the new theme
         const settingsDir = path.join("C:", "Users", userName, "AppData", "Roaming", "Code", "User", "settings.json")
 
