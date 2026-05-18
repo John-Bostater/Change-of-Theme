@@ -12,8 +12,6 @@
 
   -  Create an icon for this extension!
 
-  -  Make sure randomized theme to be applied is not the same as the current one.
-
 */
 
 
@@ -221,7 +219,6 @@
             }),
 
 
-//[NEW!!]
           //[Quick Select Theme]
             vscode.commands.registerCommand("quickSelect.leafClicked", (item) => {
 
@@ -328,7 +325,6 @@
             this.onDidChangeTreeData = this._onDidChangeTreeData.event;
 
 
-//[NEW!!]
           //Dropdown Items for the Quick Theme Select
             this.dropdowns = [{
 
@@ -343,8 +339,6 @@
       //[Displayed Objects/Classes]
         getChildren(element) {
 
-
-//[NEW!!]
           //Capture the [Buttons] && [DropDown]
             if(!element){
 
@@ -385,8 +379,6 @@
 
         }
 
-
-//[NEW!]
 
       //Refresh the tree items
         refresh(){ this._onDidChangeTreeData.fire(); }
@@ -442,8 +434,6 @@
         }
     }
 
-
-//[NEW!!]
 
   //[Dropdown Menu]
     class DropdownItem extends vscode.TreeItem {
