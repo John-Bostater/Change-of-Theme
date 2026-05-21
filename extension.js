@@ -188,7 +188,7 @@
 
                 }
               //Catch theme files with no length?
-                catch{console.log("NO LENGTH FOUND");}
+                catch{}
               
             }
 
@@ -212,7 +212,6 @@
 
       //Register the Extension to the tree
         vscode.window.registerTreeDataProvider( "changeOfTheme", new ThemeChanger() );
-        //vscode.window.registerTreeDataProvider( "changeOfTheme", new MyTreeProvider() );
 
 
       //[Action Event Handling - All Items]
@@ -276,7 +275,7 @@
 
 
               //Inform the user of their choice
-                vscode.window.showInformationMessage(`Random [All] Theme Applied! [${newName}]`);
+                vscode.window.showInformationMessage(`Random Theme Applied! [${newName}]`);
 
             }), 
 
@@ -288,7 +287,7 @@
                 ApplyNewTheme(revertTheme);
 
               //Inform the user of their choice
-                vscode.window.showInformationMessage(`Reverting theme back to: [${newName}]`);
+                vscode.window.showInformationMessage(`Reverting Theme back to: [${revertTheme}]`);
 
             }),
 
@@ -299,21 +298,19 @@
                 ApplyNewTheme(startingTheme);
 
               //Inform the user of their choice
-                vscode.window.showInformationMessage(`Reverting back to Default theme: [${newName}]`);
+                vscode.window.showInformationMessage(`Reverting back to Starting Theme: [${startingTheme}]`);
 
             }),
 
 
           //[Quick Select Theme]
-            vscode.commands.registerCommand("quickSelect.leafClicked", (item) => {
+            vscode.commands.registerCommand("dropDownThemeSelect", (item) => {
 
               //Apply the user's Quick Selection Choice
                 ApplyNewTheme(item);
 
-
-              //[DEBUG!!]
               //Inform the user of their choice
-                vscode.window.showInformationMessage(`Reverting back to Default theme: [${item}]`);
+                vscode.window.showInformationMessage(`Switching to Theme: [${item}]`);
             })
 
         )
@@ -551,7 +548,7 @@
 
             //Click action attached here
               this.command = {
-                  command: "quickSelect.leafClicked",
+                  command: "dropDownThemeSelect",
                   title: "Leaf clicked",
                   arguments: [label]
               };

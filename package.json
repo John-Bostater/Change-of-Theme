@@ -2,12 +2,16 @@
   "name": "change-of-theme",
   "displayName": "Change of Theme",
   "publisher": "JohnBostater",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "./extension.js",
 
   "engines": {
     "vscode": "^1.80.0"
   },
+
+  "categories": [
+    "Themes"
+  ],
 
   "activationEvents": [
     "onView:changeOfTheme"
