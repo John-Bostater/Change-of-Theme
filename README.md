@@ -14,7 +14,6 @@ Can't find a theme you like? why not leave it up to random change, and find one 
 ## Why I created this
 	I almost always keep open my side panel view to the Explorer's and I would prefer to change & apply themes from there via a UI.
 
-	Despite agentic AI being very efficient, I still program by hand, making use of AI as a reference/debugger.
-	During these long coding sessions I often like to change up the theme I am using to keep myself awake and interested.
+	During long coding sessions I often like to change up the theme I am using to keep myself awake and interested (I still like to program by hand lol).
 
 	VS Code does not have a built in option to access themes from the Explorer's Side Panel, so I created one.

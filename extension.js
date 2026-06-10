@@ -10,8 +10,6 @@
 
 [TO DO!!]
 
-  -  Create an icon for this extension!
-
   -  Try and get the OS Type to differentiate between:   Windows & Mac OS
 
   -  If the user is using Windows OS & the settings.json cannot be found, create one?
@@ -23,6 +21,8 @@
   -  Optimize this script by only collecting all of this data to a json the first time this extension ever loads for quicker load times
       but also do a check to see if any new themes have been downloaded by the user! (then the code will run again as if it's the user's first time loading)
 
+  -  Create a button that will order the theme names in the dropdown by alphabetical order
+        (or do this be default??)
 
 */
  
