@@ -81,17 +81,13 @@
   //[Mac OS - File Path Allocations]
     else if(osType == "Darwin"){
 
-      //Find the user's  [settings.json]  and find a way to rewrite the  ["workbench.colorTheme"] to the new theme
-        settingsDir = path.join("C:", "Users", userName, "AppData", "Roaming", "Code", "User", "settings.json")
+//[TEMP!!]
+      //Inform the user of their choice
+        vscode.window.showInformationMessage("[Error]: Mac OS is not yet supported with this version.");
+        return;
 
-      //See if the user's Directory leading up to mystery one exists
-        leadDir = path.join("C:", "Users", userName, "AppData", "Local", "Programs", "Microsoft VS Code")
-
-      //Set the real lead
-        realLead = leadDir;
-
-      //Reference to the directory containing the default themes json
-        followDir = path.join("resources", "app", "extensions", "theme-defaults", "package.json");
+      //[TO DO]: Finish make support by updating the paths to comply with the OS
+        //Code here...
 
     }
 
