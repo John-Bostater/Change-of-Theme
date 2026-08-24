@@ -5,24 +5,20 @@
 
 
 [Description]:
-  Randomize the theme to the user's specifications.
+  Randomize the theme or change it to the user's specifications.
 
 
 [TO DO!!]
+
+  -  Create a button that will order the theme names in the dropdown by alphabetical order (or do this be default??)
 
   -  Try and get the OS Type to differentiate between:   Windows & Mac OS
 
   -  If the user is using Windows OS & the settings.json cannot be found, create one?
         (do other checks to make sure the directory we want to create the new settings json into exists)
 
-
-  -  Look for more themes! (only have access to the Default one right now)
-
   -  Optimize this script by only collecting all of this data to a json the first time this extension ever loads for quicker load times
       but also do a check to see if any new themes have been downloaded by the user! (then the code will run again as if it's the user's first time loading)
-
-  -  Create a button that will order the theme names in the dropdown by alphabetical order
-        (or do this be default??)
 
 */
  
@@ -39,6 +35,7 @@
   //Variables
     var revertTheme = "";
     var startingTheme = "";
+    var favoriteTheme = "";
     var settingsDir = "";
     var leadDir = "";
     var followDir = "";
@@ -211,6 +208,7 @@
 
 
       //[Action Event Handling - All Items]
+      //=====================================================================================================================================
         context.subscriptions.push(
 
           //[Dark Mode Command Registry]
@@ -307,10 +305,56 @@
 
               //Inform the user of their choice
                 vscode.window.showInformationMessage(`Switching to Theme: [${item}]`);
+            }),
+
+
+          //[Save a Favorite Theme]
+            vscode.commands.registerCommand("saveFavoriteTheme", (item) => {
+
+              //Collect the currentTheme from the settings JSON
+                const rawTxt = fs.readFileSync(settingsDir, "utf-8")
+                const jsonData = JSON.parse(rawTxt);
+
+              //Save the name of the current theme
+                favoriteTheme = jsonData["workbench.colorTheme"];
+
+              //Write your favorite theme to the TXT file:  UserFavoriteTheme
+                fs.writeFileSync(path.join("C:", "Users", userName, "AppData", "Roaming", "Code", "User", "globalStorage", "UserFavoriteTheme.txt"), favoriteTheme);
+
+              //Inform the user of their choice
+                vscode.window.showInformationMessage(`Saving Favorite Theme: [${favoriteTheme}]`);
+
+            }),
+
+
+          //[Load a Favorite Theme]
+            vscode.commands.registerCommand("loadFavoriteTheme", (item) => {
+
+              //Save the Favorite Theme to a .txt File 
+
+              //Check if the Favorite Theme TXT File already exists
+                if(fs.existsSync( path.join("C:", "Users", userName, "AppData", "Roaming", "Code", "User", "globalStorage", "UserFavoriteTheme.txt") )){
+
+                  //Load the only data from the .txt (i.e. the name of the users favorite theme)
+                    favoriteTheme = fs.readFileSync(path.join("C:", "Users", userName, "AppData", "Roaming", "Code", "User", "globalStorage", "UserFavoriteTheme.txt"), "utf-8");
+
+                  //Apply the new theme (use the function)
+                    ApplyNewTheme(favoriteTheme);
+
+                  //Inform the user of their choice
+                    vscode.window.showInformationMessage(`Loading Favorite Theme: [${favoriteTheme}]`);
+                }
+
+              //Else, Favorite Theme TXT DNE, Inform the user to Load a New Favorite theme
+                else{ vscode.window.showWarningMessage(`There is NOT a Favorite Theme saved yet!`); }
+
             })
 
         )
-    }
+
+      //=====================================================================================================================================
+   
+   }
 
 //-----------------------------------------------------------------------------------------------------------------------------
 
@@ -430,17 +474,24 @@
                     new Button("Any Random Theme", "Click to Run", "anyMode"),
 
                   //[Any Random Dark Theme]
-                    new Button("Random Dark Theme", "Click to Run", "darkMode"),
+                    new Button("Random Dark Theme", "", "darkMode"),
 
                   //[Any Random Light Theme]
-                    new Button("Random Light Theme", "Click to Run", "lightMode"),
+                    new Button("Random Light Theme", "", "lightMode"),
 
                   //[Revert Theme]
-                    new Button("Revert Theme", "Click to Run", "revertTheme"),
+                    new Button("Revert Theme", "", "revertTheme"),
 
-                  //[Default Theme]
-                    new Button("Starting Theme", "Click to Run", "startingTheme"),
-              
+                  //[Default/Starting Theme]
+                    new Button("Starting Theme", "", "startingTheme"),
+
+                  //[Save a Favorite Theme]
+                    new Button("Save Favorite Theme", "", "saveFavoriteTheme"),
+
+                  //[Load a Favorite Theme]
+                    new Button("Load Favorite Theme", "", "loadFavoriteTheme"),
+
+
                   //[Quick Theme Select]
                     ...this.dropdowns.map( d => new DropdownItem(d.label, d.children) )
                 ];
@@ -493,7 +544,7 @@
 
 
           //Set up the icon for the button based on which type it is
-          //===============================================================================================
+          //=========================================================================================================
 
             //[Light Theme]
               if(buttonName == "Random Light Theme"){ this.iconPath = new vscode.ThemeIcon("sparkle"); }
@@ -507,10 +558,16 @@
             //[Any Random Theme]
               else if(buttonName == "Revert Theme"){ this.iconPath = new vscode.ThemeIcon("arrow-left"); }
 
-            //Save the first theme the user has applied (so they can revert back)
+            //[Starting Theme]
               else if(buttonName == "Starting Theme"){ this.iconPath = new vscode.ThemeIcon("sync"); }
-              
-          //===============================================================================================
+
+            //[Save Favorite Theme]
+              else if(buttonName == "Save Favorite Theme"){ this.iconPath = new vscode.ThemeIcon("star-empty"); }
+
+            //[Load Favorite Theme]
+              else if(buttonName == "Load Favorite Theme"){ this.iconPath = new vscode.ThemeIcon("star-full"); }
+
+          //=========================================================================================================
 
         }
     }
