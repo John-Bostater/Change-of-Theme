@@ -2,7 +2,7 @@
   "name": "change-of-theme",
   "displayName": "Change of Theme",
   "publisher": "JohnBostater",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "icon": "ExtensionIcon.png",
   "main": "./extension.js",
 

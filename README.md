@@ -3,7 +3,7 @@ Explorer based UI for VS-Code allowing a user to apply themes either **Randomly*
 
 Can't find a theme you like? why not leave it up to random change, and find one you see fit.
 
-## Video Demonstration
+## Video Demonstration	(Version 0.1.3)
 ### Randomly Select Themes
 ![Preview](VideoDemo0.gif)
 

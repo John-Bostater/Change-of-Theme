@@ -20,6 +20,8 @@
   -  Optimize this script by only collecting all of this data to a json the first time this extension ever loads for quicker load times
       but also do a check to see if any new themes have been downloaded by the user! (then the code will run again as if it's the user's first time loading)
 
+  -  Create a button that will switch to dark mode automatically past a certain time (i.e. past 7p8m) & switch to light in the morning (past 7AM)
+
 */
  
 
@@ -170,7 +172,7 @@
 
             }
   
-          //Else, [Regular Xollection]
+          //Else, [Regular Collection]
             else{
 
               //Try and gather the names
@@ -354,7 +356,18 @@
 
       //=====================================================================================================================================
    
-   }
+
+
+//[TO DO!!]
+//  Implement Day-Nighttime Cycle button here (activates via infinite while-loop that checks the time every 60 seconds?)
+//    Pressing the button will toggle this ON or OFF
+//      (Inform the user via a notification message what state it is in, store the user's state to a JSON to load everytime script Activates)
+
+      //Description here...
+        //Code here...
+
+
+    }
 
 //-----------------------------------------------------------------------------------------------------------------------------
 
