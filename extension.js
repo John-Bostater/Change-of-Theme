@@ -8,19 +8,21 @@
   Randomize the theme or change it to the user's specifications.
 
 
-[TO DO!!]
+[TO DO]:
 
-  -  Create a button that will order the theme names in the dropdown by alphabetical order (or do this be default??)
+ - Create a button that will order the theme names in the dropdown by alphabetical order (or do this be default??)
 
-  -  Try and get the OS Type to differentiate between:   Windows & Mac OS
+ - Try and get the OS Type to differentiate between:   Windows & Mac OS
 
-  -  If the user is using Windows OS & the settings.json cannot be found, create one?
+ - If the user is using Windows OS & the settings.json cannot be found, create one?
         (do other checks to make sure the directory we want to create the new settings json into exists)
 
-  -  Optimize this script by only collecting all of this data to a json the first time this extension ever loads for quicker load times
+ - Optimize this script by only collecting all of this data to a json the first time this extension ever loads for quicker load times
       but also do a check to see if any new themes have been downloaded by the user! (then the code will run again as if it's the user's first time loading)
 
-  -  Create a button that will switch to dark mode automatically past a certain time (i.e. past 7p8m) & switch to light in the morning (past 7AM)
+ - Create a button that will switch to dark mode automatically past a certain time (i.e. past 7p8m) & switch to light in the morning (past 7AM)
+
+ - Create Custom themes (this will self install into the user's theme's dir [if they have not already been created])
 
 */
  
@@ -195,6 +197,12 @@
   //Collect the Dark & Light Arrays
     GetThemesByType(true); GetThemesByType(false);
 
+
+//[NEW!!]
+//  Check if the user has 'Theme by Time of Day' turned on  found within [UserChangeOfThemeSettings.txt]
+//    (if so start a thread that will loop every 10 minutes to check the time of day)
+
+
 //-----------------------------------------------------------------------------------------------------------------------------
 
 
@@ -357,6 +365,8 @@
       //=====================================================================================================================================
    
 
+//[LEFT OFF HERE!!]
+
 
 //[TO DO!!]
 //  Implement Day-Nighttime Cycle button here (activates via infinite while-loop that checks the time every 60 seconds?)
@@ -400,50 +410,44 @@
     function MissingFileWarning(errorWarning){ vscode.window.showInformationMessage(errorWarning); console.log(errorWarning); }
 
 
-//[TO DO!]
-//
-//  return FALSE   if the theme name selected matches the current theme applied (we will select a new random #)
-
-
   //Find the user's settings.json so we can write the new theme to the settings
-  
-  function ApplyNewTheme(newThemeName){
+    function ApplyNewTheme(newThemeName){
 
 //[TO DO!!]
 //  OS CHECK HERE!!
-      //Find the user's  [settings.json]  and find a way to rewrite the  ["workbench.colorTheme"] to the new theme
-        const settingsDir = path.join("C:", "Users", userName, "AppData", "Roaming", "Code", "User", "settings.json")
+        //Find the user's  [settings.json]  and find a way to rewrite the  ["workbench.colorTheme"] to the new theme
+          const settingsDir = path.join("C:", "Users", userName, "AppData", "Roaming", "Code", "User", "settings.json")
 
-      //Path exists, continue
-        if(fs.existsSync(settingsDir)){
+        //Path exists, continue
+          if(fs.existsSync(settingsDir)){
 
-          //Collect the JSON file as a JSON
-            const rawTxt = fs.readFileSync(settingsDir, "utf-8")
-            const jsonData = JSON.parse(rawTxt);
+            //Collect the JSON file as a JSON
+              const rawTxt = fs.readFileSync(settingsDir, "utf-8")
+              const jsonData = JSON.parse(rawTxt);
 
-          //[Themes Match, return false]
-            if(newThemeName == jsonData["workbench.colorTheme"]){ console.log("Names Match"); return false; }
+            //[Themes Match, return false]
+              if(newThemeName == jsonData["workbench.colorTheme"]){ console.log("Names Match"); return false; }
 
-          //[NEW!!]
-          //Save the name of the last theme (if the user would like to revert it)
-            revertTheme = jsonData["workbench.colorTheme"];
+            //[NEW!!]
+            //Save the name of the last theme (if the user would like to revert it)
+              revertTheme = jsonData["workbench.colorTheme"];
 
-          //Change the JSON theme and then save data to new variable
-          //(we are going to rewrite the actual file with updated data)
-            jsonData["workbench.colorTheme"] = newThemeName;
-
-
-          //Rewrite the file with the updated json data
-            fs.writeFileSync(settingsDir, JSON.stringify(jsonData, null, 4));
-
-          //Return true (file succesfully wrote to)
-            return true;
-        }
+            //Change the JSON theme and then save data to new variable
+            //(we are going to rewrite the actual file with updated data)
+              jsonData["workbench.colorTheme"] = newThemeName;
 
 
-      //Else, Theme Does not match to the current one, return true
-        return false;
-    }
+            //Rewrite the file with the updated json data
+              fs.writeFileSync(settingsDir, JSON.stringify(jsonData, null, 4));
+
+            //Return true (file succesfully wrote to)
+              return true;
+          }
+
+
+        //Else, Theme Does not match to the current one, return true
+          return false;
+      }
 
 
 //-----------------------------------------------------------------------------------------------------------------------------
